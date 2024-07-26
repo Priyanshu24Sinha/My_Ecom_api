@@ -8,9 +8,23 @@ import addressRouter from './Routes/address.js'
 import cors from 'cors'
 import paymentRouter from './Routes/payment.js'
 
+import fileUpload from "express-fileupload"
+import cloudinary from "cloudinary"
+import dotenv from "dotenv"
 
+cloudinary.v2.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+dotenv.config()
 
 const app = express();
+app.use(fileUpload({
+    useTempFiles:true,
+    tempFileDir:"/tmp/",
+}));
 
 app.use(bodyParser.json())
 
@@ -50,11 +64,11 @@ app.use('/api/address',addressRouter)
 app.use('/api/payment',paymentRouter)
 
 
+// process.env.MONGO_URI
 
 
 
-
-mongoose.connect("mongodb+srv://priyanshusinha1983:iamVYoyD5N3rWPsD@cluster0.04jncfr.mongodb.net/",{
+mongoose.connect(process.env.MONGO_URI,{
 
 dbName:"MERN_E_Commerce"
 

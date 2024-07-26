@@ -1,10 +1,28 @@
 import { Products } from "../Models/Product.js";
+import cloudinary from "cloudinary"
 
+
+
+// const cloudinaryResponse = await cloudinary.uploader.upload(imgSrc.tempFilePath);
+// if(!cloudinaryResponse || cloudinaryResponse.error){
+//     console.log("clloud error on upload");
+// }
 
 // add product
 
-export const addProduct = async (req,res) =>{
-    const {title,description,price,category,qty,imgSrc} = req.body
+export const addProduct = async (req,res,next) =>{
+    if(!req.files){
+        return next(console.log("product img not found"));
+    }
+    const {imgSrc} = req.files;
+    const allowedFormats = ["image/png","image/jpeg","image/webp"];
+    const {title,description,price,category,qty} = req.body
+
+    const cloudinaryResponse = await cloudinary.uploader.upload(imgSrc.tempFilePath);
+    if(!cloudinaryResponse || cloudinaryResponse.error){
+    console.log("clloud error on upload");
+}
+
     try {
         let product = await Products.create({
           title,
@@ -12,7 +30,7 @@ export const addProduct = async (req,res) =>{
           price,
           category,
           qty,
-          imgSrc,
+          imgSrc:cloudinaryResponse.secure_url,
         });
         res.json({message:'Product added successfully...!',product})
         
